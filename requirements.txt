@@ -1,0 +1,9 @@
+docker
+kafka-python
+msgpack
+typeguard
+temporenc
+
+pytest
+mypy
+flake8
