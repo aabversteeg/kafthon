@@ -1,9 +1,17 @@
 from __future__ import annotations
 
 from . import kafthon
+from .registry import registry
 
 
-class BaseRunnable():
+class MetaRunnable(type):
+    def __new__(cls, *args, **kwargs):
+        event_cls = super().__new__(cls, *args, **kwargs)
+        registry.register_runnable(event_cls)
+        return event_cls
+
+
+class BaseRunnable(metaclass=MetaRunnable):
     _kafthon_app: kafthon.Kafthon
 
     def __init__(self):

@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 import logging
 import collections
 from typing import Dict, Callable, Set
 
+from .. import kafthon
 from ..events import BaseEvent
 from ..event_subscription import EventSubscription
 
@@ -10,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class BaseHub():
+    _kafthon_app: kafthon.Kafthon
     reraise_errors = False
 
     def __init__(self):
@@ -27,7 +31,7 @@ class BaseHub():
     def _invoke_handlers(self, event):
         event_type = type(event)
         event_subs = self._subscriptions.get(event_type)
-        for sub in event_subs:
+        for sub in event_subs or ():
             try:
                 if sub.unwrap:
                     sub.handler(**event)

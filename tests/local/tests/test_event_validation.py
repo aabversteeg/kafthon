@@ -1,7 +1,8 @@
 import pytest
 
-from kafthon.core.exceptions import ValidationError
-from .fixture import MyEvent, app
+from kafthon.exceptions import ValidationError
+
+from ..kafthon_config import MyEvent, app
 
 
 def test_validation_success():

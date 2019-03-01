@@ -11,6 +11,6 @@ else
 fi
 
 
-mypy --ignore-missing-imports .
-flake8 --exclude=venv .
-pytest --color=yes -v .
+mypy --ignore-missing-imports . || true
+flake8 --exclude=venv . || true
+pytest --color=yes -v "$*"

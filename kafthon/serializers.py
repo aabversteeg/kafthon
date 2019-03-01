@@ -1,4 +1,5 @@
 import base64
+import typing
 import datetime
 from abc import ABCMeta, abstractstaticmethod
 
@@ -18,23 +19,31 @@ class BaseSerializer(metaclass=ABCMeta):
 
 class MsgpackSerializer(BaseSerializer):
     @classmethod
-    def serialize(cls, data):
-        return msgpack.packb(
+    def serialize(cls, data, as_base64=False):
+        packed = msgpack.packb(
             data,
             default=cls.obj_encoder,
-            strict_types=True,
-            encoding="utf-8"
+            strict_types=True
         )
+        if as_base64:
+            return base64.b64encode(packed)
+        return packed
 
     @classmethod
     def deserialize(cls, data):
+        if isinstance(data, str):
+            data = base64.b64decode(data)
+
         return msgpack.unpackb(
             data,
             object_hook=cls.obj_decoder,
-            encoding="utf-8"
+            raw=False
         )
 
     def obj_encoder(obj):
+        if isinstance(obj, typing.Mapping):
+            obj = dict(obj)
+
         if isinstance(obj, datetime.datetime):
             return dict(
                 __type__='temporenc.datetime',

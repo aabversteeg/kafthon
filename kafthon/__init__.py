@@ -1,10 +1,10 @@
 # flake8: noqa
 
-from .core.kafthon import Kafthon
-from .core.hubs.base_hub import BaseHub
-from .core.hubs.simple_hub import SimpleHub
-from .core.hubs.kafka_hub import KafkaHub
-from .core.runners import BaseRunner, SimpleRunner, DockerContainerRunner
-from .core.runnables import BaseRunnable
-from .core.events import BaseEvent
-from .core.field import Field
+from .kafthon import Kafthon
+from .hubs.base_hub import BaseHub
+from .hubs.local_hub import LocalHub
+from .hubs.kafka_hub import KafkaHub
+from .runners import BaseRunner, LocalRunner, DockerContainerRunner
+from .runnables import BaseRunnable
+from .events import BaseEvent
+from .field import Field

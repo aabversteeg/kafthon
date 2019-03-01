@@ -1,11 +1,11 @@
 from unittest.mock import MagicMock
 
-from kafthon import Kafthon, SimpleHub, BaseEvent, Field, BaseRunnable, SimpleRunner
+from kafthon import Kafthon, LocalHub, LocalRunner, Field, BaseEvent, BaseRunnable
 
 
 app = Kafthon(
-    event_hub=SimpleHub(),
-    runner=SimpleRunner(),
+    event_hub=LocalHub(),
+    runner=LocalRunner(),
     validate_events=True
 )
 
@@ -24,7 +24,7 @@ class MyEvent(BaseEvent):
 
 
 @app.register
-class MySimpleRunnable(BaseRunnable):
+class MyLocalRunnable(BaseRunnable):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Is used to check whether the runnable processed an event.
@@ -33,15 +33,3 @@ class MySimpleRunnable(BaseRunnable):
     @MyEvent.subscribe
     def process_event(self, **kwargs):
         self.process_event_mock(**kwargs)
-
-
-@app.register
-class ResponseEvent(BaseEvent):
-    pass
-
-
-@app.register
-class MyDockerRunnable(BaseRunnable):
-    @MyEvent.subscribe
-    def process_event(self, **kwargs):
-        ResponseEvent().send()

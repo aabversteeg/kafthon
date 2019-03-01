@@ -1,16 +1,15 @@
-import os
 from typing import Any, Optional
 from abc import ABCMeta, abstractmethod
 
 import docker
 
 from .utils import get_cls_path
-from .serializers import BaseSerializer
+from .serializers import BaseSerializer, MsgpackSerializer
 
 
 class BaseRunner(metaclass=ABCMeta):
     def __init__(self, serializer: Optional[BaseSerializer] = None):
-        self._serializer = serializer
+        self._serializer = serializer or MsgpackSerializer()
 
     @abstractmethod
     def run(self, runnable_cls, init_data) -> Any:
@@ -22,7 +21,7 @@ class BaseRunner(metaclass=ABCMeta):
         # return self.deploy_service(runnable_cls, init_data)
 
 
-class SimpleRunner(BaseRunner):
+class LocalRunner(BaseRunner):
     def run(self, runnable_cls, init_data):
         args, kwargs = init_data
         return runnable_cls(*args, **kwargs)
@@ -31,9 +30,8 @@ class SimpleRunner(BaseRunner):
 class DockerContainerRunner(BaseRunner):
     default_docker_kwargs = dict(
         detach=True,
-        environment=os.environ.copy(),
         network=None,
-        auto_remove=True,
+        auto_remove=False,
         restart_policy=docker.types.RestartPolicy()
     )
 
@@ -69,7 +67,7 @@ class DockerContainerRunner(BaseRunner):
             docker_kwargs,
             dict(
                 environment=dict(
-                    KAFTHON_INIT_DATA=init_data
+                    KAFTHON_INIT_DATA=MsgpackSerializer.serialize(init_data, as_base64=True)
                 )
             )
         )
@@ -79,7 +77,7 @@ class DockerContainerRunner(BaseRunner):
         except docker.errors.NotFound:
             pass
 
-        self._docker_client.containers.run(
+        return self._docker_client.containers.run(
             name=instance_name,
             command=[
                 'python',

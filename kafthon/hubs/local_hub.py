@@ -2,7 +2,7 @@ from .base_hub import BaseHub
 from ..events import BaseEvent
 
 
-class SimpleHub(BaseHub):
+class LocalHub(BaseHub):
     reraise_errors = True
 
     def send(self, event):
@@ -12,4 +12,4 @@ class SimpleHub(BaseHub):
         self._invoke_handlers(event)
 
 
-__all__ = ['SimpleHub']
+__all__ = ['LocalHub']

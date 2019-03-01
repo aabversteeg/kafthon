@@ -1,6 +1,6 @@
 import random
 
-from .fixture import MyEvent
+from ..kafthon_config import MyEvent
 
 
 def test_event_receive_wrapped():

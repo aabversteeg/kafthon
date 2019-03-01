@@ -12,6 +12,8 @@ from .event_subscription import EventSubscription
 class Kafthon():
     def __init__(self, event_hub: BaseHub, runner: BaseRunner, validate_events: bool = True):
         self._event_hub = event_hub
+        event_hub._kafthon_app = self
+
         self._runner = runner
         self.validate_events = validate_events
 
@@ -43,4 +45,9 @@ class Kafthon():
                 unwrap=unwrap,
                 handler=method
             )
+        )
+
+    def get_event_type_by_cls_path(self, cls_path):
+        return self._event_registry.get(
+            cls_path
         )

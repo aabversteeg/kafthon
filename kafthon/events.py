@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import re
 import functools
 from typing import Optional, Callable
 
@@ -21,7 +20,6 @@ class MetaEvent(type):
 
         event_cls = super().__new__(cls, cls_name, base_cls, attributes, **kwargs)
 
-        # registry.register_event_type(event_cls)
         return event_cls
 
 
@@ -47,7 +45,9 @@ class BaseEvent(dict, metaclass=MetaEvent):
 
         is_method = (
             hasattr(handler, '__code__') and
-            handler.__code__.co_varnames and
+            hasattr(handler.__code__, 'co_varnames') and
+            isinstance(handler.__code__.co_varnames, tuple) and  # ensure it is no mock obj
+            len(handler.__code__.co_varnames) > 0 and
             handler.__code__.co_varnames[0] == 'self'
         )
 
@@ -67,14 +67,6 @@ class BaseEvent(dict, metaclass=MetaEvent):
             cls,
             handler,
             unwrap=unwrap
-        )
-
-    @classmethod
-    def get_slug(cls):
-        return re.sub(
-            '[^a-zA-Z0-9]+',
-            '_',
-            f'{cls.__module__}_{cls.__qualname__}',
         )
 
     def send(self):
