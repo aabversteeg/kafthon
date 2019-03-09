@@ -16,7 +16,8 @@ class BaseHub():
     _kafthon_app: kafthon.Kafthon
     reraise_errors = False
 
-    def __init__(self):
+    def __init__(self, reraise_errors=False):
+        self.reraise_errors = reraise_errors
         self._subscriptions: Dict[BaseEvent, Set[EventSubscription]] = collections.defaultdict(set)
 
     def subscribe(self, event_type: BaseEvent, handler: Callable, unwrap: bool) -> EventSubscription:
@@ -38,8 +39,11 @@ class BaseHub():
                     sub.handler(**event)
                 else:
                     sub.handler(event)
-            except Exception:
-                logger.exception('An event handler raised an exception')
+            except Exception as error:
+                if self.reraise_errors:
+                    raise error
+                else:
+                    logger.exception('An event handler raised an exception')
 
     def send(self, event):
         raise NotImplementedError()
