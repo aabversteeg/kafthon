@@ -6,6 +6,8 @@ from typing import Optional, Callable
 from . import kafthon
 from .field_mapping import FieldMapping
 from .field import Field, NOT_SET
+from .utils import check_is_method
+from .exceptions import ValidationError
 
 
 class MetaEvent(type):
@@ -43,15 +45,7 @@ class BaseEvent(dict, metaclass=MetaEvent):
         if handler is None:
             return functools.partial(cls.subscribe, unwrap=unwrap)
 
-        is_method = (
-            hasattr(handler, '__code__') and
-            hasattr(handler.__code__, 'co_varnames') and
-            isinstance(handler.__code__.co_varnames, tuple) and  # ensure it is no mock obj
-            len(handler.__code__.co_varnames) > 0 and
-            handler.__code__.co_varnames[0] == 'self'
-        )
-
-        if is_method:
+        if check_is_method(handler):
             cls._kafthon_app._register_method_subscription(
                 event_type=cls,
                 unwrap=unwrap,
