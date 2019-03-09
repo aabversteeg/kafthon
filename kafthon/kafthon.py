@@ -64,6 +64,10 @@ class Kafthon():
         )
 
     def get_event_type_by_cls_path(self, cls_path):
+        if cls_path not in self._event_registry:
+            module_path, _ = cls_path.split('-')
+            importlib.import_module(module_path)
+
         return self._event_registry.get(
             cls_path
         )
