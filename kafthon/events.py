@@ -73,13 +73,9 @@ class BaseEvent(dict, metaclass=MetaEvent):
     def validate(self):
         self._fields.validate_event(self)
 
-    @property
-    def name(self):
-        return type(self).__name__
-
     def __repr__(self):
         return '<%s %s>' % (
-            self.name,
+            type(self).__name__,
             super().__repr__()
         )
     __str__ = __repr__

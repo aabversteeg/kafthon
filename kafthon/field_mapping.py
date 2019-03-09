@@ -37,8 +37,9 @@ class FieldMapping():
         for field_name in correct_fields:
             field = self[field_name]
             try:
+                event_name = type(event).__name__
                 typeguard.check_type(
-                    f'{event.name}.{field_name}',
+                    f'{event_name}.{field_name}',
                     event[field_name],
                     field.field_type
                 )
@@ -59,7 +60,7 @@ class FieldMapping():
             errors.append(
                 KeyError(
                     '%s, undefined field%s found: %s' % (
-                        event.name,
+                        type(event).__name__,
                         's' if len(invalid_fields) != 1 else '',
                         ', '.join(invalid_fields)
                     )

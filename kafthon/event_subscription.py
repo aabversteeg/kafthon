@@ -27,3 +27,11 @@ class EventSubscription():
             self._unwrap,
             self._handler
         ))
+
+    def __str__(self):
+        return '<%s%s@%s>' % (
+            '*' if self.unwrap else '',
+            self.event_type.__name__,
+            self.handler.__qualname__
+        )
+    __repr__ = __str__
