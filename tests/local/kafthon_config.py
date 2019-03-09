@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock
 
-from kafthon import Kafthon, LocalHub, LocalRunner, Field, BaseEvent, BaseRunnable
+from kafthon import Kafthon, LocalHub, LocalRunner, Field
 
 
 app = Kafthon(
@@ -10,8 +10,7 @@ app = Kafthon(
 )
 
 
-@app.register
-class MyEvent(BaseEvent):
+class MyEvent(app.BaseEvent):
     x = Field(float)
     y = Field(float)
     z = Field(float, default=0)
@@ -23,8 +22,7 @@ class MyEvent(BaseEvent):
         return mock
 
 
-@app.register
-class MyLocalRunnable(BaseRunnable):
+class MyLocalRunnable(app.BaseRunnable):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Is used to check whether the runnable processed an event.

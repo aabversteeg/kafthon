@@ -1,5 +1,6 @@
+import importlib
 import collections
-from typing import Dict, Any, Callable, Set
+from typing import Dict, Any, Callable, Set, Optional
 
 from .events import BaseEvent
 from .runners import BaseRunner
@@ -21,9 +22,24 @@ class Kafthon():
         self._runnable_registry: Dict[str, BaseRunnable] = {}
         self._method_sub_registry: Dict[Callable, Set[EventSubscription]] = collections.defaultdict(set)
 
+        self._BaseEvent: Optional[type] = None
+        self._BaseRunnable: Optional[type] = None
+
     @property
     def event_hub(self):
         return self._event_hub
+
+    @property
+    def BaseEvent(self):
+        if self._BaseEvent is None:
+            self._BaseEvent = type('BaseEvent', (BaseEvent,), dict(_kafthon_app=self))
+        return self._BaseEvent
+
+    @property
+    def BaseRunnable(self):
+        if self._BaseRunnable is None:
+            self._BaseRunnable = type('BaseRunnable', (BaseRunnable,), dict(_kafthon_app=self))
+        return self._BaseRunnable
 
     def register(self, target: Any):
         cls_path = get_cls_path(target)

@@ -5,7 +5,6 @@ import functools
 from typing import Optional, Callable
 
 from . import kafthon
-from .field_mapping import FieldMapping
 from .field import Field, NOT_SET
 from .utils import check_is_method
 from .exceptions import ValidationError
@@ -23,6 +22,10 @@ class MetaEvent(type):
             attributes['_fields'] = FieldMapping(field_mapping)
 
         event_cls = super().__new__(cls, cls_name, base_cls, attributes, **kwargs)
+
+        kafthon_app = getattr(event_cls, '_kafthon_app', None)
+        if kafthon_app is not None:
+            kafthon_app.register(event_cls)
 
         return event_cls
 

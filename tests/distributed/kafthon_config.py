@@ -4,7 +4,7 @@ from unittest.mock import Mock
 import docker
 import requests
 
-from kafthon import Kafthon, KafkaHub, BaseEvent, Field, BaseRunnable, DockerContainerRunner
+from kafthon import Kafthon, KafkaHub, Field, DockerContainerRunner
 
 
 DOCKER_IMAGE_TAG = 'kafthon-unittest'
@@ -52,18 +52,15 @@ def get_subscribed_mock(event_type, unwrap):
     return mock
 
 
-@app.register
-class EventA(BaseEvent):
+class EventA(app.BaseEvent):
     x = Field(float)
 
 
-@app.register
-class EventB(BaseEvent):
+class EventB(app.BaseEvent):
     y = Field(float)
 
 
-@app.register
-class MyDockerRunnable(BaseRunnable):
+class MyDockerRunnable(app.BaseRunnable):
     @EventA.subscribe
     def process_event(self, x):
         EventB(y=x ** 2).send()
