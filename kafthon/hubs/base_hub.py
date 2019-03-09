@@ -30,8 +30,9 @@ class BaseHub():
 
     def _invoke_handlers(self, event):
         event_type = type(event)
-        event_subs = self._subscriptions.get(event_type)
-        for sub in event_subs or ():
+        event_subs = self._subscriptions.get(event_type) or ()
+
+        for sub in event_subs:
             try:
                 if sub.unwrap:
                     sub.handler(**event)
@@ -44,7 +45,7 @@ class BaseHub():
         raise NotImplementedError()
 
     def perform_reset(self):
-        self._listeners.clear()
+        self._subscriptions.clear()
 
 
 __all__ = ['BaseHub']

@@ -1,7 +1,6 @@
 def get_cls_path(cls):
     if not isinstance(cls, type):
         cls = type(cls)
-    assert hasattr(cls, '__qualname__'), dir(cls)
     return f'{cls.__module__}-{cls.__name__}'
 
 

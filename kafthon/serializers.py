@@ -40,6 +40,7 @@ class MsgpackSerializer(BaseSerializer):
             raw=False
         )
 
+    @staticmethod
     def obj_encoder(obj):
         if isinstance(obj, typing.Mapping):
             obj = dict(obj)
@@ -57,6 +58,7 @@ class MsgpackSerializer(BaseSerializer):
 
         return obj
 
+    @staticmethod
     def obj_decoder(obj):
         if '__type__' in obj:
             if obj['__type__'] == 'temporenc.datetime':

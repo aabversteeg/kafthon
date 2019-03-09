@@ -31,7 +31,7 @@ class DockerContainerRunner(BaseRunner):
     default_docker_kwargs = dict(
         detach=True,
         network=None,
-        auto_remove=False,
+        auto_remove=True,
         restart_policy=docker.types.RestartPolicy()
     )
 
