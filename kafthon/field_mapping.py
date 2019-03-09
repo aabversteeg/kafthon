@@ -1,3 +1,4 @@
+import operator
 from typing import Dict
 
 import typeguard
@@ -26,6 +27,7 @@ class FieldMapping():
         return self.fields[field_name]
 
     def validate_event(self, event):
+        __tracebackhide__ = operator.methodcaller("errisinstance", ValidationError)
         errors = []
         missing_fields = []
         event_field_names = set(event.keys())

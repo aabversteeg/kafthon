@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import operator
 import functools
 from typing import Optional, Callable
 
@@ -64,6 +65,7 @@ class BaseEvent(dict, metaclass=MetaEvent):
         )
 
     def send(self):
+        __tracebackhide__ = operator.methodcaller("errisinstance", ValidationError)
         if self._kafthon_app.validate_events:
             self.validate()
 
@@ -71,6 +73,7 @@ class BaseEvent(dict, metaclass=MetaEvent):
         return self
 
     def validate(self):
+        __tracebackhide__ = operator.methodcaller("errisinstance", ValidationError)
         self._fields.validate_event(self)
 
     def __repr__(self):
