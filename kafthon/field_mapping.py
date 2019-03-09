@@ -16,9 +16,17 @@ class FieldMapping():
         return self.__fields
 
     @property
-    def field_names(self):
+    def all_field_names(self):
         return frozenset(
             self.__fields.keys()
+        )
+
+    @property
+    def required_field_names(self):
+        return frozenset(
+            name
+            for name, field in self.__fields.items()
+            if field.is_required
         )
 
     def __getitem__(self, field_name):
@@ -32,9 +40,9 @@ class FieldMapping():
         missing_fields = []
         event_field_names = set(event.keys())
 
-        correct_fields = event_field_names & self.field_names
-        missing_fields = self.field_names - event_field_names
-        invalid_fields = event_field_names - self.field_names
+        correct_fields = event_field_names & self.all_field_names
+        missing_fields = self.required_field_names - event_field_names
+        invalid_fields = event_field_names - self.all_field_names
 
         for field_name in correct_fields:
             field = self[field_name]

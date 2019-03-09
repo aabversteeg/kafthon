@@ -9,6 +9,7 @@ from .field_mapping import FieldMapping
 from .field import Field, NOT_SET
 from .utils import check_is_method
 from .exceptions import ValidationError
+from .field_mapping import FieldMapping
 
 
 class MetaEvent(type):
@@ -35,7 +36,7 @@ class BaseEvent(dict, metaclass=MetaEvent):
         self.__set_defaults()
 
     def __set_defaults(self):
-        missing = self._fields.field_names - set(self.keys())
+        missing = self._fields.all_field_names - set(self.keys())
         for field_name in missing:
             default = self._fields[field_name].get_default()
             if default != NOT_SET:

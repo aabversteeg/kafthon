@@ -1,4 +1,23 @@
 def get_cls_path(cls):
+    if not isinstance(cls, type):
+        cls = type(cls)
+    assert hasattr(cls, '__qualname__'), dir(cls)
+    return f'{cls.__module__}-{cls.__name__}'
+
+
+def check_type_is_optional(target_type):
+    union_args = getattr(
+        target_type,
+        '__union_params__',  # Python 3.5
+        getattr(
+            target_type,
+            '__args__',  # Python 3.6+
+            ()
+        )
+    )
+
+    is_optional = type(None) in union_args
+    return is_optional
 
 
 def check_is_method(obj):
