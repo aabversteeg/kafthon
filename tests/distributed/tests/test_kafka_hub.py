@@ -22,3 +22,7 @@ def test_kafka_hub():
     mock.assert_called_once()
 
     mock.assert_called_once_with(**event)
+
+    # Event hub must be reset, because bindings otherwise remain.
+    # Kafthon does not support weak references yet.
+    app.event_hub.perform_reset()

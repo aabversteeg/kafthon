@@ -101,10 +101,18 @@ class KafkaHub(BaseHub):
     def __del__(self):
         self.close()
 
+    def perform_reset(self):
+        super().perform_reset()
+        self.close()
+
     def close(self):
         if self._producer is not None and not self._producer._closed:
-            self._producer.close(timeout=0)
-            del self.__dict__['producer']
+            self._producer.close(timeout=3)
+            self._producer = None
+
+        if self._consumer is not None and not self._consumer._closed:
+            self._consumer.close()
+            self._consumer = None
 
 
 __all__ = ['KafkaHub']

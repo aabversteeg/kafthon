@@ -28,6 +28,9 @@ def test_docker_runnable():
         mock.assert_called_once_with(
             dict(y=random_x ** 2)
         )
-
     finally:
         container.remove(force=True)
+
+    # Event hub must be reset, because bindings otherwise remain.
+    # Kafthon does not support weak references yet.
+    app.event_hub.perform_reset()
