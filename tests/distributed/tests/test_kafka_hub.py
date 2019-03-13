@@ -4,12 +4,10 @@ import threading
 import pytest
 
 from ..kafthon_config import EventA, get_subscribed_mock, app
-from ..kafka_runner import kafka_runner
 
 
 @pytest.mark.integration_test
 def test_kafka_hub():
-    kafka_runner.run()
     mock = get_subscribed_mock(EventA, unwrap=True)
 
     threading.Thread(
