@@ -7,6 +7,7 @@ from typing import Dict, Callable, Set
 from .. import kafthon
 from ..events import BaseEvent
 from ..event_subscription import EventSubscription
+from ..signals import ON_EVENT_RECEIVE
 
 
 logger = logging.getLogger(__name__)
@@ -30,6 +31,8 @@ class BaseHub():
         return subscription
 
     def _invoke_handlers(self, event):
+        self._kafthon_app.fire_signal(ON_EVENT_RECEIVE, event=event)
+
         event_type = type(event)
         event_subs = self._subscriptions.get(event_type) or ()
 
@@ -46,6 +49,9 @@ class BaseHub():
                     logger.exception('An event handler raised an exception')
 
     def send(self, event):
+        raise NotImplementedError()
+
+    def start_receiving(self, event):
         raise NotImplementedError()
 
     def perform_reset(self):

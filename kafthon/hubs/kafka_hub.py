@@ -61,7 +61,6 @@ class KafkaHub(BaseHub):
         topic_name = get_cls_path(
             type(event)
         )
-        print('Sending event:', topic_name, str(event)[:100])
 
         self.producer.send(
             topic_name,
@@ -89,12 +88,6 @@ class KafkaHub(BaseHub):
                 print('Could not infer even type for:', raw_event.topic)
 
             event = event_type(raw_event.value)
-            print('Received event:', str(event)[:300])
-
-            event_time = event.get('event_time')
-            if event_time:
-                latency = datetime.datetime.now() - event_time
-                print(f'Latency: {latency}')
 
             self._invoke_handlers(event)
 

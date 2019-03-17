@@ -1,4 +1,6 @@
+import logging
 import importlib
+import functools
 import collections
 from typing import Dict, Any, Callable, Set, Optional
 
@@ -8,6 +10,9 @@ from .utils import get_cls_path
 from .hubs.base_hub import BaseHub
 from .runnables import BaseRunnable
 from .event_subscription import EventSubscription
+
+
+logger = logging.getLogger(__name__)
 
 
 class Kafthon():
@@ -21,6 +26,7 @@ class Kafthon():
         self._event_registry: Dict[str, BaseEvent] = {}
         self._runnable_registry: Dict[str, BaseRunnable] = {}
         self._method_sub_registry: Dict[Callable, Set[EventSubscription]] = collections.defaultdict(set)
+        self._signal_handlers: Dict[str, Set[Callable]] = collections.defaultdict(set)
 
         self._BaseEvent: Optional[type] = None
         self._BaseRunnable: Optional[type] = None
@@ -71,3 +77,21 @@ class Kafthon():
         return self._event_registry.get(
             cls_path
         )
+
+    def bind_signal(self, handler: Optional[Callable] = None, signal_type: str = None):
+        if signal_type is None:
+            raise TypeError('signal_type argument must not be None')
+
+        if handler is None:
+            return functools.partial(self.bind_signal, signal_type=signal_type)
+
+        self._signal_handlers[signal_type].add(handler)
+
+    def fire_signal(self, signal_type: str, *args, **kwargs):
+        handler_set = self._signal_handlers.get(signal_type)
+        if handler_set:
+            for handler in handler_set:
+                try:
+                    handler(*args, **kwargs)
+                except:
+                    logger.exception('Error occurred during signal handling.')

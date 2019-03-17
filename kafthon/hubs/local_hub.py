@@ -11,5 +11,8 @@ class LocalHub(BaseHub):
 
         self._invoke_handlers(event)
 
+    def start_receiving(self):
+        pass
+
 
 __all__ = ['LocalHub']

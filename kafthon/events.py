@@ -9,6 +9,7 @@ from .field import Field, NOT_SET
 from .utils import check_is_method
 from .exceptions import ValidationError
 from .field_mapping import FieldMapping
+from .signals import ON_EVENT_SENT
 
 
 class MetaEvent(type):
@@ -70,6 +71,9 @@ class BaseEvent(dict, metaclass=MetaEvent):
 
     def send(self):
         __tracebackhide__ = operator.methodcaller("errisinstance", ValidationError)
+
+        self._kafthon_app.fire_signal(ON_EVENT_SENT, event=self)
+
         if self._kafthon_app.validate_events:
             self.validate()
 
