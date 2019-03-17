@@ -26,8 +26,9 @@ class BaseRunnable(metaclass=MetaRunnable):
                     )
 
     @classmethod
-    def deploy(cls, *args, **kwargs):
+    def deploy(cls, init_kwargs=None, **kwargs):
         return cls._kafthon_app._runner.run(
             cls,
-            init_data=(args, kwargs)
+            init_kwargs=init_kwargs or {},
+            **kwargs
         )

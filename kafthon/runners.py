@@ -12,19 +12,18 @@ class BaseRunner(metaclass=ABCMeta):
         self._serializer = serializer or MsgpackSerializer()
 
     @abstractmethod
-    def run(self, runnable_cls, init_data) -> Any:
+    def run(self, runnable_cls, instance_i=None, init_kwargs=None) -> Any:
         pass
 
-        # init_data = (args, kwargs)
+        # init_kwargs = (args, kwargs)
         # if self._serializer is not None:
-        #     init_data = self._serializer.serialize(init_data)
-        # return self.deploy_service(runnable_cls, init_data)
+        #     init_kwargs = self._serializer.serialize(init_kwargs)
+        # return self.deploy_service(runnable_cls, init_kwargs)
 
 
 class LocalRunner(BaseRunner):
-    def run(self, runnable_cls, init_data):
-        args, kwargs = init_data
-        return runnable_cls(*args, **kwargs)
+    def run(self, runnable_cls, instance_i=None, init_kwargs=None) -> Any:
+        return runnable_cls(**init_kwargs or {})
 
 
 class DockerContainerRunner(BaseRunner):
@@ -59,15 +58,18 @@ class DockerContainerRunner(BaseRunner):
         final_kwargs['environment'] = env
         return final_kwargs
 
-    def run(self, runnable_cls, init_data, docker_kwargs=None):
+    def run(self, runnable_cls, instance_i=None, init_kwargs=None, docker_kwargs=None):
         instance_name = f'runnable_{runnable_cls.__name__.lower()}'
+
+        if instance_i is not None:
+            instance_name += f'_{instance_i}'
 
         docker_kwargs = self.merge_docker_kwargs(
             self.default_docker_kwargs,
             docker_kwargs,
             dict(
                 environment=dict(
-                    KAFTHON_INIT_DATA=MsgpackSerializer.serialize(init_data, as_base64=True)
+                    KAFTHON_INIT_KWARGS=MsgpackSerializer.serialize(init_kwargs, as_base64=True)
                 )
             )
         )
