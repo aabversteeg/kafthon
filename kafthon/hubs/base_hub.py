@@ -57,5 +57,8 @@ class BaseHub():
     def perform_reset(self):
         self._subscriptions.clear()
 
+    def has_subscriptions(self):
+        return bool(self._subscriptions)
+
 
 __all__ = ['BaseHub']

@@ -21,9 +21,7 @@ app = Kafthon(
             network='host',
             volumes=[f'{cwd}:{cwd}'],
             working_dir=cwd,
-            environment=dict(
-                INSIDE_CONTAINER='true'
-            )
+            environment=dict()
         )
     ),
     validate_events=True

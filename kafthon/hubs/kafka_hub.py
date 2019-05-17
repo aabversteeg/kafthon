@@ -69,6 +69,9 @@ class KafkaHub(BaseHub):
         self.producer.flush()
 
     def start_receiving(self, timeout_ms=None, max_records=None):
+        if not self.has_subscriptions():
+            return
+
         if not (timeout_ms is None and max_records is None):
             response = self.consumer.poll(
                 timeout_ms=timeout_ms or 0,

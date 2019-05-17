@@ -4,12 +4,6 @@ import sys
 from kafthon.registry import registry
 from .serializers import MsgpackSerializer
 
-try:
-    import typeguard # NOQA
-except ImportError:
-    import subprocess
-    subprocess.check_call(['pip', 'install', '-r', 'requirements.txt'])
-
 
 def start_runnable(runnable_path, init_kwargs=None):
     if init_kwargs:
