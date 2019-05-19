@@ -1,4 +1,5 @@
 from __future__ import annotations
+import collections
 
 from . import kafthon
 from .registry import registry
@@ -16,6 +17,9 @@ class BaseRunnable(metaclass=MetaRunnable):
 
     def __init__(self):
         for attr in self.__class__.__dict__.values():
+            if not isinstance(attr, collections.abc.Hashable):
+                continue
+
             if attr in self._kafthon_app._method_sub_registry:
                 unbound_method = attr
                 for subscription in self._kafthon_app._method_sub_registry[unbound_method]:
