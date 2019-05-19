@@ -70,6 +70,7 @@ class KafkaHub(BaseHub):
 
     def start_receiving(self, timeout_ms=None, max_records=None):
         if not self.has_subscriptions():
+            logger.warn('Cannot start receiving events; no subscriptions.')
             return
 
         if not (timeout_ms is None and max_records is None):

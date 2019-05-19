@@ -3,6 +3,7 @@ import typing
 import datetime
 from abc import ABCMeta, abstractstaticmethod
 
+import pandas as pd
 import msgpack
 import temporenc
 
@@ -43,7 +44,15 @@ class MsgpackSerializer(BaseSerializer):
     @staticmethod
     def obj_encoder(obj):
         if isinstance(obj, typing.Mapping):
-            obj = dict(obj)
+            return dict(obj)
+
+        if isinstance(obj, pd.DataFrame):
+            return dict(
+                __type__='pandas.DataFrame',
+                __value__=base64.b64encode(
+                    obj.to_msgpack()
+                )
+            )
 
         if isinstance(obj, datetime.datetime):
             return dict(
@@ -61,12 +70,19 @@ class MsgpackSerializer(BaseSerializer):
     @staticmethod
     def obj_decoder(obj):
         if '__type__' in obj:
-            if obj['__type__'] == 'temporenc.datetime':
-                moment = temporenc.unpackb(
-                    base64.b64decode(obj['__value__'])
+            _type, value = obj['__type__'], obj['__value__']
+
+            if _type == 'temporenc.datetime':
+                obj = temporenc.unpackb(
+                    base64.b64decode(value)
+                ).datetime()
+
+            elif _type == 'pandas.DataFrame':
+                obj = pd.read_msgpack(
+                    base64.b64decode(value)
                 )
-                obj = moment.datetime()
+
             else:
-                raise TypeError('Cannot unpack type: ' + obj['__type__'])
+                raise TypeError('Cannot unpack type: ' + _type)
 
         return obj
